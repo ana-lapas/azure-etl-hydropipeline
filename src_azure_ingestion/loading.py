@@ -2,7 +2,7 @@ import pandas as pd
 import logging
 from datetime import datetime
 from azure.storage.blob import BlobServiceClient
-from src.config import PipelineConfig
+from src_azure_ingestion.config import PipelineConfig
 
 class DataLoader:
     """Handles data persistence strategy (Local Disk + Azure Blob Storage)."""

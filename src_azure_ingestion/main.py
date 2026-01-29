@@ -1,9 +1,9 @@
 import os
 from pathlib import Path
 from dotenv import load_dotenv
-from src.config import PipelineConfig
-from src.etl.bronze.extraction import ANAExtractor
-from src.etl.bronze.loading import DataLoader
+from src_azure_ingestion.config import PipelineConfig
+from src_azure_ingestion.extraction import ANAExtractor
+from src_azure_ingestion.loading import DataLoader
 
 # Load the .env file
 load_dotenv()

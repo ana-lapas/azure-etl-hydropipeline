@@ -2,7 +2,7 @@ import hydrobr
 import pandas as pd
 import logging
 from typing import List, Optional
-from src.config import PipelineConfig, retry_with_backoff
+from src_azure_ingestion.config import PipelineConfig, retry_with_backoff
 
 class ANAExtractor:
     """Handles communication with the National Water Agency (ANA) API."""
