@@ -7,39 +7,40 @@
 
 ## 🎯 Project Overview
 
-This repository hosts the Data Engineering pipeline built to process hydrological data from the **Brazilian National Water Agency (ANA)**. The focus is monitoring the **Miranda River Basin**, a critical region in the Pantanal Biome.
+This repository hosts an End-to-End Data Engineering pipeline built to process hydrological data from the **Brazilian National Water Agency (ANA)**. The focus is monitoring the **Miranda River Basin**, a critical region in the Pantanal Biome.
 
-The project follows a **Hybrid Architecture**:
+The project implements a **Robust Hybrid Architecture** designed for reliability:
 
-1.  **Cloud Ingestion (Azure):** Automated Python scripts for resilient extraction (Bronze Layer).
-2.  **Analytical Transformation:** Jupyter Notebooks for data cleaning, gap filling (Silver Layer), and exploratory analysis.
+1.  **Resilient Ingestion (Bronze):** A smart extraction engine that prioritizes the official API but automatically switches to a **Manual Fallback Mechanism** if the API fails or returns incomplete data.
+2.  **Trusted Transformation (Silver):** Advanced data cleaning pipeline with **Data Lineage tracking**, strictly enforcing daily continuity and removing statistical noise.
 
 ---
 
 ## 🚀 Project Roadmap & Status
 
-### Phase 1: Ingestion (Bronze Layer) ✅ _Current Release_
+### Phase 1: Ingestion (Bronze Layer) ✅ _Completed_
 
-- [x] **Resilient API Connection:** Implementation of Retry Pattern to handle ANA API instability.
-- [x] **Raw Data Extraction:** Automated download of Flow and Rainfall historical data (1994-2024).
-- [x] **Bronze Notebook Demo:** Interactive documentation of the ingestion process.
+- [x] **Hybrid Extraction Engine:** Logic to prioritize API (`hydrobr`) but fallback to local CSV snapshots if data quality is low.
+- [x] **Resilience Patterns:** Implementation of **Retry with Exponential Backoff** to handle network instability.
+- [x] **Data Lineage:** Tagging incoming datasets with a `data_origin` metadata field (API vs. MANUAL) for full auditability.
 
-### Phase 2: Transformation (Silver Layer) 🚧 _In Progress_
+### Phase 2: Transformation (Silver Layer) ✅ _Completed_
 
-- [ ] **Temporal Alignment:** Reindexing to ensure a consistent daily calendar (handling missing dates).
-- [ ] **Gap Filling:** Implementation of Linear Interpolation for hydrological continuity.
-- [ ] **Parquet Conversion:** Optimization for columnar storage and strict typing.
+- [x] **Defensive Programming:** Implementation of strict column sanitization (Regex) and **Blacklisting** logic to remove "ghost" stations.
+- [x] **Quality Gates:** Automated audit system that flags stations with **>10% missing data** as "High Risk".
+- [x] **Gap Filling:** Application of **Linear Interpolation** to preserve the physical continuity of river flow trends.
+- [x] **Storage Optimization:** Migration from CSV to **Parquet** (Snappy compression) for type safety and performance.
 
-### Phase 3: Feature Engineering (Gold Layer) 🔮 _Planned_
+### Phase 3: Feature Engineering (Gold Layer) 🚧 _Next Step_
 
 - [ ] **Normalization:** Applying `MinMaxScaler` (0-1) to ensure LSTM convergence.
 - [ ] **Windowing:** Creating sliding windows (lag features) for time-series forecasting.
-- [ ] **Train/Test Split:** Segregating data to prevent look-ahead bias and data leakage.
+- [ ] **Train/Test Split:** Segregating data using a time-based split to prevent look-ahead bias.
 
-### Phase 4: DevOps & MLOps 🔮 _Future Release_
+### Phase 4: Production & MLOps 🔮 _Future Release_
 
-- [ ] **Dockerization:** Containerizing the ETL scripts (`Dockerfile`) to ensure reproducibility across environments.
-- [ ] **CI/CD Pipelines:** Setting up GitHub Actions for automated testing and linting.
+- [ ] **Dockerization:** Containerizing the ETL scripts (`Dockerfile`) for reproducibility.
+- [ ] **CI/CD:** Setting up GitHub Actions for automated linting and testing.
 
 ---
 
@@ -48,8 +49,16 @@ The project follows a **Hybrid Architecture**:
 ```text
 .
 ├── notebooks_analysis/
-│   └── 01_Bronze_Ingestion_Demo.ipynb  <-- START HERE (Active)
+│   ├── 01_Bronze_Ingestion.ipynb      <-- (Extraction & Fallback Logic)
+│   └── 02_Silver_Transformation.ipynb <-- (Quality Gates & Parquet)
 │
-├── src_azure_ingestion/                <-- (Pending Upload)
+├── datalake_simulated/                <-- Local Data Lake Structure
+│   ├── manual_upload/                 <-- Place your manual .csv backups here
+│   ├── raw/                           <-- Bronze Layer Output (CSVs)
+│   └── silver/                        <-- Silver Layer Output (Parquet)
+│
+├── docs/
+│   └── SILVER_DESIGN.md               <-- Technical Design Decisions
+│
 └── README.md
 ```
