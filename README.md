@@ -20,9 +20,10 @@ The project implements a **Robust Hybrid Architecture** designed for reliability
 
 ### Phase 1: Ingestion (Bronze Layer) ✅ _Completed_
 
-- [x] **Hybrid Extraction Engine:** Logic to prioritize API (`hydrobr`) but fallback to local CSV snapshots if data quality is low.
-- [x] **Resilience Patterns:** Implementation of **Retry with Exponential Backoff** to handle network instability.
-- [x] **Data Lineage:** Tagging incoming datasets with a `data_origin` metadata field (API vs. MANUAL) for full auditability.
+- [x] **Hybrid Extraction Engine:** Logic to prioritize API (`hydrobr`) but automatically fallback to local CSV snapshots if the API is unstable.
+- [x] **Resilience Patterns:** Implementation of a custom **Retry Decorator with Exponential Backoff** to handle transient network failures.
+- [x] **Locale-Aware Parsing:** engineered a robust parser to handle **Brazilian CSV formats** (semicolon delimiters `;` and decimal commas `,`), implementing a "Nuclear Fix" strategy to prevent data loss (`NaN`) during type conversion.
+- [x] **Data Lineage:** Tagging every record with a `data_origin` metadata field (API vs. MANUAL) for full auditability.
 
 ### Phase 2: Transformation (Silver Layer) ✅ _Completed_
 
@@ -62,3 +63,14 @@ The project implements a **Robust Hybrid Architecture** designed for reliability
 │
 └── README.md
 ```
+
+## 🛠️ Technical Deep Dive: The Ingestion Challenge
+
+One of the critical challenges in this project was handling the heterogeneity of hydrological data sources.
+
+- **The Problem:** Manual backup files from Brazilian agencies often use **Decimal Commas** (`12,5`) instead of dots, and varied delimiters (`;` or `\t`). Standard libraries often fail to parse this, resulting in null values.
+- **The Solution:** I implemented a **Multi-Strategy Parser** in the Bronze Layer that:
+  1.  Detects the delimiter automatically.
+  2.  Treats all columns as strings initially to preserve integrity.
+  3.  Applies a vectorized replacement of commas to dots.
+  4.  Coerces data to `Float64` only after sanitization.
